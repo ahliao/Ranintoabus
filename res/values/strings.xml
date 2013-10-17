@@ -1,5 +1,11 @@
 <resources>
 
     <string name="app_name">Ride</string>
+    
+    <string name="titleStatus">Bus Status</string>
+    
+    <string name="toastMsg">Got Data</string>
+    
+    <string name="postURI">http://www.theride.org/AjaxControlHandler.ashx</string>
 
 </resources>
