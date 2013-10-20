@@ -6,9 +6,17 @@
     
     <!-- Response EditText -->
     <EditText android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1"
         android:id="@+id/responseText"
         android:gravity="top|left" 
         android:inputType="textCapSentences|textMultiLine"/>
+    
+    <!-- Refresh Button -->
+    <Button android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/refreshButton"
+        android:text="@string/refreshBtnTxt"
+        android:textSize="20sp" />
 
 </LinearLayout>

@@ -21,12 +21,18 @@ import com.ranintotree.ride.R;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class StatusActivity extends Activity {
+public class StatusActivity extends Activity implements OnClickListener{
+	private static final String TAG = "StatusActivity";
 	
 	EditText responseText;
+	Button refreshBtn;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +41,8 @@ public class StatusActivity extends Activity {
 		
 		// Find the views
 		responseText = (EditText) findViewById(R.id.responseText);
-		new PostData().execute("");
-		
-		//try {
-			//HttpResponse response = postData();
-			//responseText.setText(inputStreamToString(response.getEntity().getContent()));
-		//} catch (IOException e) {}
+		refreshBtn = (Button) findViewById(R.id.refreshButton);
+		refreshBtn.setOnClickListener(this);
 	}
 	
 	@Override
@@ -53,14 +55,16 @@ public class StatusActivity extends Activity {
 		super.onPause();
 	}
 	
-	class PostData extends AsyncTask<String, Integer, String> {
+	class PostData extends AsyncTask<String, Integer, StringBuilder> {
 		@Override
-		protected String doInBackground(String... arg0) {
+		protected StringBuilder doInBackground(String... arg0) {
 			HttpResponse response = postData();
-			String str = null;
+			StringBuilder str = null;
 			try {
-			str = inputStreamToString(response.getEntity().getContent()).toString();
-			} catch (IOException e) {}
+			str = inputStreamToString(response.getEntity().getContent());
+			} catch (IOException e) {
+				Log.e(TAG, e.toString());
+			}
 			return str;
 		}
 		
@@ -70,11 +74,45 @@ public class StatusActivity extends Activity {
 		}
 		
 		@Override
-		protected void onPostExecute(String result) {
+		protected void onPostExecute(StringBuilder result) {
 			super.onPostExecute(result);
 			Toast.makeText(getApplicationContext(), R.string.toastMsg, Toast.LENGTH_LONG).show();
+			// TODO: parse the data (COULD DO IN THE STRING BUILDER PART)
+
+			//result = result.replaceAll("\\\\t", "");
+			//int routeAbb = result.indexOf("Route");
+			//String routeNum = result.substring(routeAbb + 20,routeAbb+22);
+			parseData(result);
 			responseText.setText(result);
 		}
+	}
+	
+	@Override
+	public void onClick(View v) {
+		new PostData().execute("");
+	}
+	
+	// parse the response for the data
+	public void parseData(StringBuilder s) {
+		int routeAbb = s.indexOf("Rou");
+		if (routeAbb >= 0)
+		{
+			//Log.d(TAG, Integer.toString(s.indexOf("Route"))); // Gives 176
+			Log.d(TAG, s.substring(routeAbb + 20,routeAbb + 21));	// Always here it seems
+			Log.d(TAG, "Vehicle # " + s.substring(215,219));	// Get the Vehicle Numbers
+			Log.d(TAG, "Bearing " + s.substring(231,232)); 		// Get the bearing
+			Log.d(TAG, "Lat " + s.substring(238,249));			// Get the lat
+			Log.d(TAG, "Lon " + s.substring(255,266));			// Get the lon
+			int nextStop = s.indexOf("Nex", 2000);
+			int endStop = s.indexOf("\\", nextStop + 48);
+			//Log.d(TAG, "Next Stop: " + nextStop);
+			Log.d(TAG, "Next Stop: " + s.substring(nextStop + 48, endStop));
+			int estimate = s.indexOf("Arrival", 2000);
+			Log.d(TAG, "Estimated Arrival: " + estimate);
+		}
+
+		
+		// search in the range 170 to 200
 	}
 	
 	// Send a POST request to theride.org
@@ -88,8 +126,8 @@ public class StatusActivity extends Activity {
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(4);
 			nameValuePairs.add(new BasicNameValuePair("__EVENTTARGET", "null"));
 			nameValuePairs.add(new BasicNameValuePair("__EVENTARGUMENT", ""));
-			nameValuePairs.add(new BasicNameValuePair("__AJAXCONTROLID", "dnn%24ctr2257%24InteractiveMap%24ajaxControl0"));
-			nameValuePairs.add(new BasicNameValuePair("__AJAXPARAM", "%7BMethodName%3A%22GetVehiclePositions_Internal%22%2CReturnHtml%3Atrue%2CAutoUpdateHtml%3Atrue%2CParameters%3A%5B%2216%22%2C0%2Cnull%5D%2CLoadOutOfBand%3Atrue%2CControlType%3A%22ASP.desktopmodules_artemis_ridertools_ucridetrak_ascx%2C%20App_Web_ucridetrak.ascx.ec37e418.bsepl5iy%2C%20Version%3D0.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull%22%2CCallbackMethod%3A%22Invoke%22%2CProperties%3A%7BPortalID%3A0%2CTabID%3A62%2CModuleID%3A2257%2CControlName%3A%22%22%2CModulePath%3A%22%2F%22%2CID%3A%22dnn%24ctr2257%24InteractiveMap%24ajaxControl0%22%2CClientID%3A%22dnn_ctr2257_InteractiveMap_ajaxControl0%22%2CUniqueID%3A%22dnn%24ctr2257%24InteractiveMap%24ajaxControl0%22%2CDirection%3A%220%22%2CRefreshIntervalID%3A37%7D%2CPath%3A%22~%2FDefault.aspx%22%7D"));
+			nameValuePairs.add(new BasicNameValuePair("__AJAXCONTROLID", getString(R.string.ajaxControlID)));
+			nameValuePairs.add(new BasicNameValuePair("__AJAXPARAM", getString(R.string.vehiclePontiac)));
 			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 			
 			HttpResponse response = httpClient.execute(httpPost);
@@ -103,6 +141,7 @@ public class StatusActivity extends Activity {
 		return null;
 	}
 	
+	// Takes in an InputStream and returns a StringBuilder
 	private StringBuilder inputStreamToString(InputStream is) {
 	    String line = "";
 	    StringBuilder total = new StringBuilder();
@@ -112,8 +151,12 @@ public class StatusActivity extends Activity {
 
 	    // Read response until the end
 	    try {
-	    	while ((line = rd.readLine()) != null) { 
-	    		total.append(line); 
+	    	//while ((line = rd.readLine()) != null) {
+	    	// TODO: parse the data I need
+	    	line = rd.readLine();
+	    	if (line != null) {
+	    		total.append(line);
+	    		//total.append(line.indexOf("Route"));
 	    	}
 	    } catch (IOException e) {
 	    	
