@@ -93,12 +93,12 @@ public class StatusActivity extends Activity implements OnClickListener{
 	}
 	
 	// parse the response for the data
-	public void parseData(StringBuilder s) {
-		int routeAbb = s.indexOf("Rou");
+	public void parseData(StringBuilder input) {
+		int routeAbb = input.indexOf("Rou");
 		if (routeAbb >= 0)
 		{
 			//Log.d(TAG, Integer.toString(s.indexOf("Route"))); // Gives 176
-			Log.d(TAG, s.substring(routeAbb + 20,routeAbb + 21));	// Always here it seems
+			/*Log.d(TAG, s.substring(routeAbb + 20,routeAbb + 21));	// Always here it seems
 			Log.d(TAG, "Vehicle # " + s.substring(215,219));	// Get the Vehicle Numbers
 			Log.d(TAG, "Bearing " + s.substring(231,232)); 		// Get the bearing
 			Log.d(TAG, "Lat " + s.substring(238,249));			// Get the lat
@@ -108,7 +108,46 @@ public class StatusActivity extends Activity implements OnClickListener{
 			//Log.d(TAG, "Next Stop: " + nextStop);
 			Log.d(TAG, "Next Stop: " + s.substring(nextStop + 48, endStop));
 			int estimate = s.indexOf("Arrival", 2000);
-			Log.d(TAG, "Estimated Arrival: " + estimate);
+			Log.d(TAG, "Estimated Arrival: " + estimate);*/
+			
+			String strDir = null;
+	        String strNextStop = null;
+	        String strArrival = null;
+	        String strStatus = null;
+	        int index = input.indexOf("Direction");
+	        String substr;
+	        int offset = 0;
+			int indexRouteAbb = 0;
+	        while ((indexRouteAbb = input.indexOf("RouteA", indexRouteAbb + 30)) != -1) {
+	            String strRouteAbb = input.substring(indexRouteAbb + 20, indexRouteAbb + 21);
+	            String strVehicleNum = input.substring(indexRouteAbb + 40, indexRouteAbb + 43);
+	            String strBearing = input.substring(indexRouteAbb + 55, indexRouteAbb + 56);
+	            String strLat = input.substring(indexRouteAbb + 63, indexRouteAbb + 73);
+	            String strLog = input.substring(indexRouteAbb + 80, indexRouteAbb + 90);
+	            // TODO: convert to doubles/ints/whatever works
+	            System.out.println("Route Abbr: " + strRouteAbb);
+	            System.out.println("Vehicle Num: " + strVehicleNum);
+	            System.out.println("Bearing: " + strBearing);
+	            System.out.println("Lat: " + strLat);
+	            System.out.println("Log: " + strLog);
+	        }
+	        while ((index = input.indexOf("Direction", index + 1140)) != -1) {
+	            substr = input.substring(index, input.indexOf("Status", index+10) + 50);
+	            offset = 0;
+	            strDir = substr.substring(407, substr.indexOf("\\",410));
+	            offset = strDir.length();
+	            strNextStop = substr.substring(674+offset, substr.indexOf("\\",675+offset));
+	            offset += strNextStop.length();
+	            if (substr.indexOf("Depart", 685) != -1) offset += 19;
+	            strArrival = substr.substring(1004+offset, substr.indexOf("\\",1005+offset));
+	            offset += strArrival.length();
+	            strStatus = substr.substring(1085+offset, substr.indexOf("\\",1086+offset));
+
+	            System.out.println("Direction: " + strDir);
+	            System.out.println("Next Stop: " + strNextStop);
+	            System.out.println("Estimated Arrival: " + strArrival);
+	            System.out.println("Status: " + strStatus + "\n\n");
+	        }
 		}
 
 		
