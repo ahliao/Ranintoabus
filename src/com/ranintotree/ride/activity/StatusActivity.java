@@ -17,6 +17,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import com.ranintotree.ride.R;
+import com.ranintotree.ride.util.VehicleData;
 
 import android.app.Activity;
 import android.os.AsyncTask;
@@ -31,13 +32,20 @@ import android.widget.Toast;
 public class StatusActivity extends Activity implements OnClickListener{
 	private static final String TAG = "StatusActivity";
 	
-	EditText responseText;
-	Button refreshBtn;
+	// VehicleData structures
+	private ArrayList<VehicleData> vehicles; 
+	
+	// UI elements
+	private EditText responseText;
+	private Button refreshBtn;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.status);
+		
+		// Create the vehicle storage list
+		vehicles = new ArrayList<VehicleData>();
 		
 		// Find the views
 		responseText = (EditText) findViewById(R.id.responseText);
@@ -61,7 +69,7 @@ public class StatusActivity extends Activity implements OnClickListener{
 			HttpResponse response = postData();
 			StringBuilder str = null;
 			try {
-			str = inputStreamToString(response.getEntity().getContent());
+				str = inputStreamToString(response.getEntity().getContent());
 			} catch (IOException e) {
 				Log.e(TAG, e.toString());
 			}
@@ -77,13 +85,10 @@ public class StatusActivity extends Activity implements OnClickListener{
 		protected void onPostExecute(StringBuilder result) {
 			super.onPostExecute(result);
 			Toast.makeText(getApplicationContext(), R.string.toastMsg, Toast.LENGTH_LONG).show();
-			// TODO: parse the data (COULD DO IN THE STRING BUILDER PART)
 
-			//result = result.replaceAll("\\\\t", "");
-			//int routeAbb = result.indexOf("Route");
-			//String routeNum = result.substring(routeAbb + 20,routeAbb+22);
+			responseText.setText("");
+			vehicles.clear();
 			parseData(result);
-			responseText.setText(result);
 		}
 	}
 	
@@ -97,61 +102,66 @@ public class StatusActivity extends Activity implements OnClickListener{
 		int routeAbb = input.indexOf("Rou");
 		if (routeAbb >= 0)
 		{
-			//Log.d(TAG, Integer.toString(s.indexOf("Route"))); // Gives 176
-			/*Log.d(TAG, s.substring(routeAbb + 20,routeAbb + 21));	// Always here it seems
-			Log.d(TAG, "Vehicle # " + s.substring(215,219));	// Get the Vehicle Numbers
-			Log.d(TAG, "Bearing " + s.substring(231,232)); 		// Get the bearing
-			Log.d(TAG, "Lat " + s.substring(238,249));			// Get the lat
-			Log.d(TAG, "Lon " + s.substring(255,266));			// Get the lon
-			int nextStop = s.indexOf("Nex", 2000);
-			int endStop = s.indexOf("\\", nextStop + 48);
-			//Log.d(TAG, "Next Stop: " + nextStop);
-			Log.d(TAG, "Next Stop: " + s.substring(nextStop + 48, endStop));
-			int estimate = s.indexOf("Arrival", 2000);
-			Log.d(TAG, "Estimated Arrival: " + estimate);*/
-			
-			String strDir = null;
-	        String strNextStop = null;
-	        String strArrival = null;
-	        String strStatus = null;
+			String strDir 			= null;
+	        String strNextStop 		= null;
+	        String strArrival 		= null;
+	        String strStatus 		= null;
+	        String strRouteAbb 		= null;
+            String strVehicleNum 	= null;
+            String strBearing 		= null;
+            String strLat 			= null;
+            String strLog 			= null;
+            
 	        int index = input.indexOf("Direction");
 	        String substr;
 	        int offset = 0;
 			int indexRouteAbb = 0;
 	        while ((indexRouteAbb = input.indexOf("RouteA", indexRouteAbb + 30)) != -1) {
-	            String strRouteAbb = input.substring(indexRouteAbb + 20, indexRouteAbb + 21);
-	            String strVehicleNum = input.substring(indexRouteAbb + 40, indexRouteAbb + 43);
-	            String strBearing = input.substring(indexRouteAbb + 55, indexRouteAbb + 56);
-	            String strLat = input.substring(indexRouteAbb + 63, indexRouteAbb + 73);
-	            String strLog = input.substring(indexRouteAbb + 80, indexRouteAbb + 90);
-	            // TODO: convert to doubles/ints/whatever works
-	            System.out.println("Route Abbr: " + strRouteAbb);
-	            System.out.println("Vehicle Num: " + strVehicleNum);
-	            System.out.println("Bearing: " + strBearing);
-	            System.out.println("Lat: " + strLat);
-	            System.out.println("Log: " + strLog);
+	        	// Read in the parts of the input that we want
+	            strRouteAbb = input.substring(indexRouteAbb + 20, indexRouteAbb + 21);
+	            strVehicleNum = input.substring(indexRouteAbb + 40, indexRouteAbb + 43);
+	            strBearing = input.substring(indexRouteAbb + 55, indexRouteAbb + 56);
+	            strLat = input.substring(indexRouteAbb + 63, input.indexOf(",", indexRouteAbb + 66));
+	            strLog = input.substring(indexRouteAbb + 80, input.indexOf("}", indexRouteAbb + 81));
+	            
+	            // Write into the textbox
+	            String in = "Route Abbr: " + strRouteAbb + "\nVehicle Num: " + strVehicleNum +
+	            		"\nBearing: " + strBearing + "\nLat: " + strLat + "\nLog: " + strLog;
+	            
+	            responseText.setText(responseText.getText() + "\n" + in);
+	            	            
+	            // add in to the vehicle list
+	        	VehicleData data = new VehicleData(Integer.parseInt(strRouteAbb), Integer.parseInt(strVehicleNum),
+	        			Double.parseDouble(strBearing), Double.parseDouble(strLat), Double.parseDouble(strLog));
+	        	vehicles.add(data);
 	        }
+	        index = 0;
 	        while ((index = input.indexOf("Direction", index + 1140)) != -1) {
-	            substr = input.substring(index, input.indexOf("Status", index+10) + 50);
-	            offset = 0;
+	            substr = input.substring(index, input.indexOf("Status", index+10) + 70);
+	            
+	            // If the bus is in depart state, skip it
+	            // if (substr.indexOf("Depart") != -1) continue;
+	            
+	            offset = 0;		// Reset the offset
+	            // Read in the more detailed stuff
 	            strDir = substr.substring(407, substr.indexOf("\\",410));
 	            offset = strDir.length();
-	            strNextStop = substr.substring(674+offset, substr.indexOf("\\",675+offset));
+	            strNextStop = substr.substring(671+offset, substr.indexOf("\\u003",675+offset));
 	            offset += strNextStop.length();
-	            if (substr.indexOf("Depart", 685) != -1) offset += 19;
-	            strArrival = substr.substring(1004+offset, substr.indexOf("\\",1005+offset));
+	            if (substr.indexOf("Depart", 685) != -1) offset += 2;
+	            strArrival = substr.substring(1001+offset, substr.indexOf("\\",1005+offset));
 	            offset += strArrival.length();
-	            strStatus = substr.substring(1085+offset, substr.indexOf("\\",1086+offset));
+	            strStatus = substr.substring(1082+offset, substr.indexOf("\\",1086+offset));
 
-	            System.out.println("Direction: " + strDir);
-	            System.out.println("Next Stop: " + strNextStop);
-	            System.out.println("Estimated Arrival: " + strArrival);
-	            System.out.println("Status: " + strStatus + "\n\n");
+	            strNextStop = strNextStop.replace("\\u0026", "&");	// Replace the unicode with the "&"
+
+	            // Add into the textbox
+	            String in = "\nDirection: " + strDir + "\nNext Stop: " + strNextStop +
+	                "\nEstimated Time: " + strArrival + "\nStatus: " + strStatus;
+	            
+	            responseText.setText(responseText.getText() + in);
 	        }
 		}
-
-		
-		// search in the range 170 to 200
 	}
 	
 	// Send a POST request to theride.org
@@ -173,9 +183,9 @@ public class StatusActivity extends Activity implements OnClickListener{
 			return response;
 			
 		} catch (ClientProtocolException e) {
-			
+			Log.e(TAG, e.toString()); 
 		} catch (IOException e) {
-			
+			Log.e(TAG, e.toString());
 		}
 		return null;
 	}
@@ -190,15 +200,12 @@ public class StatusActivity extends Activity implements OnClickListener{
 
 	    // Read response until the end
 	    try {
-	    	//while ((line = rd.readLine()) != null) {
-	    	// TODO: parse the data I need
 	    	line = rd.readLine();
 	    	if (line != null) {
 	    		total.append(line);
-	    		//total.append(line.indexOf("Route"));
 	    	}
 	    } catch (IOException e) {
-	    	
+	    	Log.e(TAG, e.toString());
 	    }
 	    
 	    // Return full string

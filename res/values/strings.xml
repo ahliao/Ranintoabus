@@ -4,7 +4,7 @@
     
     <string name="titleStatus">Bus Status</string>
     <string name="refreshBtnTxt">Refresh</string>
-    <string name="toastMsg">Got Data</string>
+    <string name="toastMsg">Alex is sexy</string>
     
     <string name="postURI">http://www.theride.org/AjaxControlHandler.ashx</string>
     <string formatted="false" name="ajaxControlID">dnn%24ctr2257%24InteractiveMap%24ajaxControl0</string>
