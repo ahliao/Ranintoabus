@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -89,6 +90,15 @@ public class StatusActivity extends Activity implements OnClickListener{
 			responseText.setText("");
 			vehicles.clear();
 			parseData(result);
+			// Display the data onto the textView (replace later)
+			for (Iterator<VehicleData> i = vehicles.iterator(); i.hasNext(); ) {
+				VehicleData data = i.next();
+				responseText.setText("Route: " + data.getRouteAbb() + 
+						"\nBus Num: " + data.getVehicleNum() +
+						"\nNext Stop: " + data.getNextStop() +
+						"\nArrival Time: " + data.getArrivalTime() +
+						"\nStatus: " + data.getStatus());
+			}
 		}
 	}
 	
@@ -125,10 +135,10 @@ public class StatusActivity extends Activity implements OnClickListener{
 	            strLog = input.substring(indexRouteAbb + 80, input.indexOf("}", indexRouteAbb + 81));
 	            
 	            // Write into the textbox
-	            String in = "Route Abbr: " + strRouteAbb + "\nVehicle Num: " + strVehicleNum +
+	            /*String in = "Route Abbr: " + strRouteAbb + "\nVehicle Num: " + strVehicleNum +
 	            		"\nBearing: " + strBearing + "\nLat: " + strLat + "\nLog: " + strLog;
 	            
-	            responseText.setText(responseText.getText() + "\n" + in);
+	            responseText.setText(responseText.getText() + "\n" + in);*/
 	            	            
 	            // add in to the vehicle list
 	        	VehicleData data = new VehicleData(Integer.parseInt(strRouteAbb), Integer.parseInt(strVehicleNum),
@@ -136,7 +146,9 @@ public class StatusActivity extends Activity implements OnClickListener{
 	        	vehicles.add(data);
 	        }
 	        index = 0;
-	        while ((index = input.indexOf("Direction", index + 1140)) != -1) {
+	        for (Iterator<VehicleData> i = vehicles.iterator(); i.hasNext(); ) {
+	        //while ((index = input.indexOf("Direction", index + 1140)) != -1) {
+	        	if ((index = input.indexOf("Direction", index + 1140)) == -1) break;
 	            substr = input.substring(index, input.indexOf("Status", index+10) + 70);
 	            
 	            // If the bus is in depart state, skip it
@@ -154,12 +166,19 @@ public class StatusActivity extends Activity implements OnClickListener{
 	            strStatus = substr.substring(1082+offset, substr.indexOf("\\",1086+offset));
 
 	            strNextStop = strNextStop.replace("\\u0026", "&");	// Replace the unicode with the "&"
+	            
+	            // Add the data to the VehicleData structure
+	            VehicleData data = i.next();
+	            data.setDirection(strDir);
+	            data.setNextStop(strNextStop);
+	            data.setArrivalTime(strArrival);
+	            data.setStatus(strStatus);
 
 	            // Add into the textbox
-	            String in = "\nDirection: " + strDir + "\nNext Stop: " + strNextStop +
-	                "\nEstimated Time: " + strArrival + "\nStatus: " + strStatus;
+	            //String in = "\nDirection: " + strDir + "\nNext Stop: " + strNextStop +
+	            //    "\nEstimated Time: " + strArrival + "\nStatus: " + strStatus;
 	            
-	            responseText.setText(responseText.getText() + in);
+	            //responseText.setText(responseText.getText() + in);
 	        }
 		}
 	}

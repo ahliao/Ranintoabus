@@ -20,7 +20,7 @@
         %2CCurrentRoute%3Anull%2CRouteCollection%3Anull%2CCurrentDirection%3Anull%7D%2CPath%3A%22~ 
         %2FDefault.aspx%22%7D</string>
     <string formatted="false" name="vehiclePontiac">%7BMethodName%3A%22GetVehiclePositions_Internal%22 
-        %2CReturnHtml%3Atrue%2CAutoUpdateHtml%3Atrue%2CParameters%3A%5B%225%22%2C-1 
+        %2CReturnHtml%3Atrue%2CAutoUpdateHtml%3Atrue%2CParameters%3A%5B%221%22%2C-1 
         %2Cnull%5D%2CTrackViewState%3Atrue%2CSkipPostBackData%3Atrue%2CLoadOutOfBand 
         %3Atrue%2CControlType%3A%22ASP.desktopmodules_artemis_ridertools_ucridetrak_ascx 
         %2C%20App_Web_ucridetrak.ascx.ec37e418.bsepl5iy%2C%20Version%3D0.0.0.0%2C 
