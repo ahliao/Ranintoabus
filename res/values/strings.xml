@@ -39,5 +39,9 @@
         %22%2CLoadOutOfBand%3Atrue%2CClientIDMode%3A1%2CLoaded%3Atrue%2CRouteAbbr%3A%221 
         %22%2CDirection%3Anull%2CDayOfWeek%3Anull%2CLocateMeIsActive%3Afalse 
         %2CVehicleCollection%3Anull%7D%2CPath%3A%22~%2FDefault.aspx%22%7D</string>
+    <string name="closestStop">closest stop</string>
+    <string name="busStops">bus stops</string>
+    <string name="busRoutes">bus routes</string>
+    <string name="map">map</string>
 
 </resources>

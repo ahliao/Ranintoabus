@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:orientation="vertical">
+
+    <fragment 
+        android:id="@+id/mainFragment"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_gravity="top"
+        class="com.ranintotree.ride.fragments.StatusFragment"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:orientation="horizontal">
+
+        <Button
+            android:text="@string/closestStop"
+            android:id="@+id/buttonClosest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            style="?android:attr/buttonBarButtonStyle"/>
+		<Button
+		    android:text="@string/busStops"
+		    android:id="@+id/buttonStops"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" 
+            style="?android:attr/buttonBarButtonStyle"/>
+        <Button
+            android:text="@string/busRoutes"
+            android:id="@+id/buttonRoutes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"/>
+        <Button
+            android:text="@string/map"
+            android:id="@+id/buttonMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"/>
+		
+
+    </LinearLayout>
+
+</LinearLayout>
