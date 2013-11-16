@@ -79,14 +79,15 @@ public class HTTPSupport {
 
 		// Check if there is internet
 		public static boolean isNetworkAvailable(Activity a) {
-			ConnectivityManager cm = (ConnectivityManager) 
-					a.getSystemService(Context.CONNECTIVITY_SERVICE);
-			NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-			// if no network is available networkInfo will be null
-			// otherwise check if we are connected
-			if (networkInfo != null && networkInfo.isConnected()) {
-			return true;
-		}
-		return false;
+			ConnectivityManager connectivity = (ConnectivityManager) a.getSystemService(Context.CONNECTIVITY_SERVICE);
+			if (connectivity != null) {
+				NetworkInfo[] info = connectivity.getAllNetworkInfo();
+				if (info != null) 
+					for (int i = 0; i < info.length; i++) 
+						if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+							return true;
+						}
+			}
+			return false;
 	} 
 }

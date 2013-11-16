@@ -6,6 +6,13 @@
     <string name="refreshBtnTxt">Refresh</string>
     <string name="toastMsg">Updated</string>
     
+    <string-array name="routes_array">
+        <item>1 - Pontiac - Dhu Varren</item>
+        <item>1U - Pontiac - University</item>
+        <item>2 - Plymouth</item>
+        <item>2C - Plymouth Glazier South</item>
+    </string-array>
+    
     <string name="postURI">http://www.theride.org/AjaxControlHandler.ashx</string>
     <string formatted="false" name="ajaxControlID">dnn%24ctr2257%24InteractiveMap%24ajaxControl0</string>
     <string formatted="false" name="routePontiac">%7BMethodName%3A%22GetRoute_Internal%22%2CParameters 

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.ranintotree.ride.R;
+import com.ranintotree.ride.fragments.StatusFragment;
 import com.ranintotree.ride.util.HTTPSupport;
 import com.ranintotree.ride.util.VehicleData;
 
@@ -28,15 +29,22 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		// Fragment test
+		// Fragment
 		StatusFragment fragment = (StatusFragment) getSupportFragmentManager().findFragmentById(R.id.statusFragment);
-		fragment.setData(null);
 		
 		// initialize the ArrayList
 		vehicles = new ArrayList<VehicleData>();
 		
 		// Send the POST
-		new PostData().execute("");
+		if (HTTPSupport.isNetworkAvailable(this)) {
+			new PostData().execute("");
+		} else {
+			StatusFragment stfragment = 
+					(StatusFragment) getSupportFragmentManager().findFragmentById(R.id.statusFragment);
+			if (stfragment != null && stfragment.isInLayout()) {
+				stfragment.setData("No network connection.");
+			} 
+		}
 	}
 	
 	@Override

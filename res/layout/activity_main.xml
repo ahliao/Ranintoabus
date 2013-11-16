@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        class="com.ranintotree.ride.activity.StatusFragment" >
+        class="com.ranintotree.ride.fragments.StatusFragment" >
         <!-- Preview: layout=@layout/details -->
     </fragment>
 
