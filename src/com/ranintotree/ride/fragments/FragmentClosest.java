@@ -1,7 +1,5 @@
 package com.ranintotree.ride.fragments;
 
-import java.util.zip.Inflater;
-
 import com.ranintotree.ride.R;
 
 import android.os.Bundle;

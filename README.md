@@ -10,4 +10,5 @@ To Do List:
 4. Make app more efficient
 
 Things to do later:
-
+Date: Nov 22-24, Add in route selected and connect the basic parts.
+Date: Dec 25-Jan 1, Have an beta version out to select people.

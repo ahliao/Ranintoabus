@@ -4,7 +4,7 @@
     
     <string name="titleStatus">Bus Status</string>
     <string name="refreshBtnTxt">Refresh</string>
-    <string name="toastMsg">Updated</string>
+    <string name="toastMsg">Denny is a sexy man</string>
     
     <string-array name="routes_array">
         <item>1 - Pontiac - Dhu Varren</item>

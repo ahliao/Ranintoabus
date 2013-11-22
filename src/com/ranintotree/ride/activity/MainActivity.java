@@ -86,12 +86,17 @@ public class MainActivity extends FragmentActivity {
 			parseData(result);
 			// Display the data onto the textView (replace later)
 			// TODO: display the selected data (the bus or stop)
-			for (Iterator<VehicleData> i = vehicles.iterator(); i.hasNext(); ) {
-				VehicleData data = i.next();
-				StatusFragment stfragment = 
-						(StatusFragment) getSupportFragmentManager().findFragmentById(R.id.statusFragment);
-				if (stfragment != null && stfragment.isInLayout()) {
-					stfragment.setData(data);
+			StatusFragment stfragment = 
+				(StatusFragment) getSupportFragmentManager().findFragmentById(R.id.statusFragment);
+			if (vehicles.size() == 0) {
+				stfragment.setData("No buses running");
+			} else {
+				for (Iterator<VehicleData> i = vehicles.iterator(); i.hasNext(); ) {
+					VehicleData data = i.next();
+
+					if (stfragment != null && stfragment.isInLayout()) {
+						stfragment.setData(data);
+					}
 				}
 			}
 		}
