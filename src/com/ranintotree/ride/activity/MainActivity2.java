@@ -137,9 +137,9 @@ public class MainActivity2 extends Activity implements OnClickListener{
 	            strLog = input.substring(indexRouteAbb + 80, input.indexOf("}", indexRouteAbb + 81));
 	            
 	            // add in to the vehicle list
-	        	VehicleData data = new VehicleData(Integer.parseInt(strRouteAbb), Integer.parseInt(strVehicleNum),
-	        			Double.parseDouble(strBearing), Double.parseDouble(strLat), Double.parseDouble(strLog));
-	        	vehicles.add(data);
+	        	//VehicleData data = new VehicleData(Integer.parseInt(strRouteAbb), Integer.parseInt(strVehicleNum),
+	        	//		Double.parseDouble(strBearing), Double.parseDouble(strLat), Double.parseDouble(strLog));
+	        	//vehicles.add(data);
 	        }
 	        index = 0;
 	        for (Iterator<VehicleData> i = vehicles.iterator(); i.hasNext(); ) {

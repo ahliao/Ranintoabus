@@ -115,14 +115,21 @@ public class HTTPSupport {
 			int indexRouteAbb = 0;
 			while ((indexRouteAbb = input.indexOf("RouteA", indexRouteAbb + 30)) != -1) {
 				// Read in the parts of the input that we want
-				strRouteAbb = input.substring(indexRouteAbb + 20, indexRouteAbb + 21);
-				strVehicleNum = input.substring(indexRouteAbb + 40, indexRouteAbb + 43);
-				strBearing = input.substring(indexRouteAbb + 55, indexRouteAbb + 56);
-				strLat = input.substring(indexRouteAbb + 63, input.indexOf(",", indexRouteAbb + 66));
-				strLog = input.substring(indexRouteAbb + 80, input.indexOf("}", indexRouteAbb + 81));
+				strRouteAbb = input.substring(indexRouteAbb + 20, input.indexOf("\"", indexRouteAbb + 21));
+				offset = strRouteAbb.length() - 1;
+				Log.i(TAG, "offset: " + offset);
+				strVehicleNum = input.substring(indexRouteAbb + 40 + offset, indexRouteAbb + 43 + offset);
+				strBearing = input.substring(indexRouteAbb + 55 + offset, indexRouteAbb + 56 + offset);
+				strLat = input.substring(indexRouteAbb + 63 + offset, input.indexOf(",", indexRouteAbb + 66));
+				strLog = input.substring(indexRouteAbb + 80 + offset, input.indexOf("}", indexRouteAbb + 81));
+				Log.i(TAG, strRouteAbb);
+				Log.i(TAG, "Num: " + strVehicleNum);
+				Log.i(TAG, "Bearing: " + strBearing);
+				Log.i(TAG, "Lat: " + strLat);
+				Log.i(TAG, "Log: " + strLog);
 
 				// add in to the vehicle list
-				VehicleData data = new VehicleData(Integer.parseInt(strRouteAbb), Integer.parseInt(strVehicleNum),
+				VehicleData data = new VehicleData(strRouteAbb, Integer.parseInt(strVehicleNum),
 						Double.parseDouble(strBearing), Double.parseDouble(strLat), Double.parseDouble(strLog));
 				vehicles.add(data);
 			}
@@ -135,10 +142,11 @@ public class HTTPSupport {
 				// If the bus is in depart state, skip it
 				// if (substr.indexOf("Depart") != -1) continue;
 
-				offset = 0;		// Reset the offset
+				offset = strRouteAbb.length() - 1;		// Reset the offset
 				// Read in the more detailed stuff
-				strDir = substr.substring(407, substr.indexOf("\\",410));
-				offset = strDir.length();
+				strDir = substr.substring(407 + offset, substr.indexOf("\\",410));
+				Log.i(TAG,"Dir: " + strDir);
+				offset += strDir.length();
 				strNextStop = substr.substring(671+offset, substr.indexOf("\\u003",675+offset));
 				offset += strNextStop.length();
 				if (substr.indexOf("Depart", 685) != -1) offset += 2;

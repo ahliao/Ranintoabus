@@ -5,15 +5,13 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
-
 import com.ranintotree.ride.R;
+import com.ranintotree.ride.fragments.GMapFragment;
 import com.ranintotree.ride.fragments.RouteFragment;
 import com.ranintotree.ride.fragments.StatusFragment;
 import com.ranintotree.ride.fragments.RouteFragment.OnRouteListClickListener;
 
 public class RouteActivity extends FragmentActivity implements OnRouteListClickListener {
-	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +33,6 @@ public class RouteActivity extends FragmentActivity implements OnRouteListClickL
 			// Add the fragment to the fragment_container FrameLayout
 			getSupportFragmentManager().beginTransaction().add(R.id.route_fragment_container, routeFragment).commit();
 		}
-		
-		// Fragment
-		//StatusFragment fragment = (StatusFragment) getSupportFragmentManager().findFragmentById(R.id.routeFragment);
 	}
 	
 	@Override
@@ -52,18 +47,16 @@ public class RouteActivity extends FragmentActivity implements OnRouteListClickL
 
 	@Override
 	public void onRouteListClick(ListView l, View v, int position, long id) {
-		//String str = (String) l.getItemAtPosition(position);
-		
 		// Replace the fragment in the container to the selected route status
-		StatusFragment status = StatusFragment.newInstance(201);
+		StatusFragment status = StatusFragment.newInstance(position);
+		//GMapFragment map = new GMapFragment();
 		
 		// Execute the transaction and replace the route fragment
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 		ft.replace(R.id.route_fragment_container, status);
+		//ft.replace(R.id.route_fragment_container, map);
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack(null);
 		ft.commit();
-		
-		//Toast.makeText(getApplicationContext(), str, Toast.LENGTH_LONG).show();	
 	}
 }
