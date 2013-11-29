@@ -90,10 +90,42 @@ public class HTTPSupport {
 					}
 		}
 		return false;
-	} 
+	}
+	
+	// parse the response for the route data aka the stops
+	public static RouteData parseRouteData(String routeabb, StringBuilder input) {
+		ArrayList<StopData> stops = new ArrayList<StopData>();
+		String strRouteName;
+		int index = input.indexOf("Name");
+		strRouteName = input.substring(index + 7, input.indexOf("\"",index+8));
+		System.out.println(strRouteName);
+		String strStopID;
+		String strStopName;
+		String strSeq;
+		String strLat, strLog;
+
+		// TODO: Get the ID
+		index = input.indexOf("StopID", index + 20);
+		while (index >= 0) {
+			strStopID = input.substring(index + 9, input.indexOf("\"",index+11));
+			index = input.indexOf("\"Name", index + 10);
+			strStopName = input.substring(index + 8, input.indexOf("\"", index+9));
+			index = input.indexOf("Seq", index + 20);
+			strSeq = input.substring(index+5,input.indexOf(",",index+6));
+			index += strSeq.length() + 7;
+			strLat = input.substring(index+5,input.indexOf(",",index+6));
+			index += strLat.length() + 7;
+			strLog = input.substring(index+5,input.indexOf(",",index+6));
+			index = input.indexOf("StopID", index + 20);
+			stops.add(new StopData(strStopID,strStopName,strSeq,Double.parseDouble(strLat),Double.parseDouble(strLog)));
+		}
+		System.out.println("Size: " + stops.size());
+		RouteData route = new RouteData(routeabb, stops);
+		return route;
+	}
 
 	// NOTE: Maybe put into separate file
-	// parse the response for the data
+	// parse the response for the vehicle data
 	public static void parseVehicleData(StringBuilder input, ArrayList<VehicleData> vehicles) {
 		int routeAbb = input.indexOf("Rou");
 		if (routeAbb >= 0)

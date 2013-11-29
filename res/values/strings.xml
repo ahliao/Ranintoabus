@@ -64,17 +64,6 @@
         %3Atrue%2CClientIDMode%3A1%2CLocateMeRadius%3A1%2CFindAStopRadius%3A1%2CLoaded%3Atrue 
         %2CCurrentRoute%3Anull%2CRouteCollection%3Anull%2CCurrentDirection%3Anull%7D%2CPath%3A%22~ 
         %2FDefault.aspx%22%7D</string>
-    <string formatted="false" name="routePontiac">%7BMethodName%3A%22GetRoute_Internal%22%2CParameters 
-        %3A%5B%221%22%2Ctrue%2Ctrue%5D%2CTrackViewState%3Atrue%2CSkipPostBackData%3Atrue%2CLoadOutOfBand 
-        %3Atrue%2CControlType%3A%22ASP.desktopmodules_artemis_ridertools_interactivemap_ascx%2C 
-        %20App_Web_interactivemap.ascx.ec37e418.rb44e0j9%2C%20Version%3D0.0.0.0%2C%20Culture%3Dneutral 
-        %2C%20PublicKeyToken%3Dnull%22%2CCallbackMethod%3A%22Invoke%22%2CProperties%3A%7BPortalID%3A0 
-        %2CTabID%3A62%2CModuleID%3A2257%2CControlName%3A%22InteractiveMap%22%2CModulePath%3A%22 
-        %2FDesktopModules%2FArtemis.RiderTools%2F%22%2CID%3A%22InteractiveMap%22%2CClientID%3A 
-        %22dnn_ctr2257_InteractiveMap%22%2CUniqueID%3A%22dnn%24ctr2257%24InteractiveMap%22%2CLoadOutOfBand 
-        %3Atrue%2CClientIDMode%3A1%2CLocateMeRadius%3A1%2CFindAStopRadius%3A1%2CLoaded%3Atrue 
-        %2CCurrentRoute%3Anull%2CRouteCollection%3Anull%2CCurrentDirection%3Anull%7D%2CPath%3A%22~ 
-        %2FDefault.aspx%22%7D</string>
     <string formatted="false" name="vehicleParams1">%7BMethodName%3A%22GetVehiclePositions_Internal%22 
         %2CReturnHtml%3Atrue%2CAutoUpdateHtml%3Atrue%2CParameters%3A%5B%22</string>
     <string formatted="false" name="vehicleParams2">%22%2C-1 
@@ -89,20 +78,9 @@
         %22%2CLoadOutOfBand%3Atrue%2CClientIDMode%3A1%2CLoaded%3Atrue%2CRouteAbbr%3A%221 
         %22%2CDirection%3Anull%2CDayOfWeek%3Anull%2CLocateMeIsActive%3Afalse 
         %2CVehicleCollection%3Anull%7D%2CPath%3A%22~%2FDefault.aspx%22%7D</string>
+    <string formatted="false" name="routeParams1">%7BMethodName%3A%22GetRoute_Internal%22%2CParameters%3A%5B%22</string>
+    <string formatted="false" name="routeParams2">%22%2Ctrue%2Ctrue%5D%2CTrackViewState%3Atrue%2CSkipPostBackData%3Atrue%2CLoadOutOfBand%3Atrue%2CControlType%3A%22ASP.desktopmodules_artemis_ridertools_interactivemap_ascx%2C%20App_Web_interactivemap.ascx.ec37e418.3e7pcqsz%2C%20Version%3D0.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull%22%2CCallbackMethod%3A%22Invoke%22%2CProperties%3A%7BPortalID%3A0%2CTabID%3A62%2CModuleID%3A2257%2CControlName%3A%22InteractiveMap%22%2CModulePath%3A%22%2FDesktopModules%2FArtemis.RiderTools%2F%22%2CID%3A%22InteractiveMap%22%2CClientID%3A%22dnn_ctr2257_InteractiveMap%22%2CUniqueID%3A%22dnn%24ctr2257%24InteractiveMap%22%2CLoadOutOfBand%3Atrue%2CClientIDMode%3A1%2CLocateMeRadius%3A1%2CFindAStopRadius%3A1%2CLoaded%3Atrue%2CCurrentRoute%3Anull%2CRouteCollection%3Anull%2CCurrentDirection%3Anull%2CCurrentDayOfWeek%3Anull%2CSelectedStop%3Anull%7D%2CPath%3A%22~%2FDefault.aspx%22%7D</string>
         
-    <string formatted="false" name="vehiclePontiac">%7BMethodName%3A%22GetVehiclePositions_Internal%22 
-        %2CReturnHtml%3Atrue%2CAutoUpdateHtml%3Atrue%2CParameters%3A%5B%221%22%2C-1 
-        %2Cnull%5D%2CTrackViewState%3Atrue%2CSkipPostBackData%3Atrue%2CLoadOutOfBand 
-        %3Atrue%2CControlType%3A%22ASP.desktopmodules_artemis_ridertools_ucridetrak_ascx 
-        %2C%20App_Web_ucridetrak.ascx.ec37e418.bsepl5iy%2C%20Version%3D0.0.0.0%2C 
-        %20Culture%3Dneutral%2C%20PublicKeyToken%3Dnull%22%2CCallbackMethod%3A 
-        %22Invoke%22%2CProperties%3A%7BPortalID%3A0%2CTabID%3A62%2CModuleID%3A2257 
-        %2CControlName%3A%22%22%2CModulePath%3A%22%2F%22%2CID%3A%22dnn%24ctr2257 
-        %24InteractiveMap%24ajaxControl0%22%2CClientID%3A%22dnn_ctr2257_InteractiveMap 
-        _ajaxControl0%22%2CUniqueID%3A%22dnn%24ctr2257%24InteractiveMap%24ajaxControl0 
-        %22%2CLoadOutOfBand%3Atrue%2CClientIDMode%3A1%2CLoaded%3Atrue%2CRouteAbbr%3A%221 
-        %22%2CDirection%3Anull%2CDayOfWeek%3Anull%2CLocateMeIsActive%3Afalse 
-        %2CVehicleCollection%3Anull%7D%2CPath%3A%22~%2FDefault.aspx%22%7D</string>
     <string name="closestStop">closest stop</string>
     <string name="busStops">bus stops</string>
     <string name="busRoutes">bus routes</string>
