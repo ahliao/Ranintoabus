@@ -50,6 +50,7 @@ public class RouteActivity extends FragmentActivity implements OnRouteListClickL
 		// Replace the fragment in the container to the selected route status
 		//StatusFragment status = StatusFragment.newInstance(position);
 		GMapFragment map = GMapFragment.newInstance(position);
+		//GMapFragment map = new GMapFragment();
 		
 		// Execute the transaction and replace the route fragment
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
