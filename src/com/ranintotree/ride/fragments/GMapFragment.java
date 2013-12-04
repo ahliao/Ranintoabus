@@ -3,6 +3,7 @@ package com.ranintotree.ride.fragments;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 
@@ -30,6 +31,9 @@ import com.ranintotree.ride.util.RouteData;
 import com.ranintotree.ride.util.StopData;
 import com.ranintotree.ride.util.VehicleData;
 
+import database.DatabaseHandler;
+import database.RouteNamesContract.RouteNameEntry;
+
 public class GMapFragment extends SupportMapFragment {
 	static final LatLng HAMBURG = new LatLng(42.2778682, -83.7465795);
 	//static final LatLng KIEL = new LatLng(53.551, 9.993);
@@ -38,8 +42,8 @@ public class GMapFragment extends SupportMapFragment {
 
 	// Markers for the buses
 	private ArrayList<VehicleData> vehicles;	// List of the buses
-	private Marker mBus1; // This is just a test marker for now
-	
+	private ArrayList<Marker> busMarkers;		// List of the bus markers on map
+
 	//private ScheduledExecutorService scheduler;
 	private Handler handler = new Handler();
 	private PostBusData postBusTask = null;
@@ -64,7 +68,7 @@ public class GMapFragment extends SupportMapFragment {
 	public int getShownRoute() {
 		return getArguments().getInt("route_list_pos", 0);
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -100,6 +104,8 @@ public class GMapFragment extends SupportMapFragment {
 
 		// initialize the ArrayList
 		vehicles = new ArrayList<VehicleData>();
+		busMarkers = new ArrayList<Marker>();
+
 		// get the map reference
 		map = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
@@ -109,14 +115,14 @@ public class GMapFragment extends SupportMapFragment {
 		//map.animateCamera(CameraUpdateFactory.zoomTo(21), 2000, null);
 		new PostRouteData().execute("");
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();
 		handler.removeCallbacks(HTTPTask);
 		postBusTask.cancel(true); 
 	}
-	
+
 	private Runnable HTTPTask = new Runnable() {
 		@Override
 		public void run() {
@@ -127,7 +133,7 @@ public class GMapFragment extends SupportMapFragment {
 				postBusTask = new PostBusData();	// TODO: do something about the AsyncTask string input?
 				postBusTask.execute("");
 			}
-			handler.postDelayed(HTTPTask, 10000);
+			handler.postDelayed(HTTPTask, 15000);
 		}
 	};
 
@@ -150,6 +156,34 @@ public class GMapFragment extends SupportMapFragment {
 			if (i == 0) map.moveCamera(CameraUpdateFactory.newLatLngZoom(lat, 14));
 		}
 
+	}
+
+	// Load the buses into the map
+	private void loadBusesToMap() {
+		// if some buses appeared/disappeared then just clear the busMarkers and restart
+		// since we would have to change the listeners and text too
+		if (vehicles.size() != busMarkers.size()) {
+			busMarkers.clear();
+			for (Iterator<VehicleData> i = vehicles.iterator(); i.hasNext(); ) {
+				VehicleData data = i.next();
+				Marker mark = map.addMarker(new MarkerOptions()
+				.position(new LatLng(data.getLat(),data.getLog()))
+				.title("Bus " + data.getVehicleNum())
+				.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher)));
+				busMarkers.add(mark);
+			}
+		}
+		if (vehicles.size() == 0) {
+			// No buses are running
+		} else {
+			// NOTE: we might run into a bug where a bus appears and another disappears
+			// at the same time which would confuse the listener and text
+			for (int i = 0; i < vehicles.size(); ++i) {
+				VehicleData data = vehicles.get(i);
+				busMarkers.get(i).setPosition(new LatLng(data.getLat(),data.getLog()));
+				busMarkers.get(i).setTitle("Bus " + data.getVehicleNum());
+			}
+		}
 	}
 
 	private class PostBusData extends AsyncTask<String, Integer, StringBuilder> {
@@ -180,23 +214,11 @@ public class GMapFragment extends SupportMapFragment {
 
 			Toast.makeText(getActivity(), R.string.toastMsg, Toast.LENGTH_LONG).show();
 
-			// Should put the UI changes into another function/ the UI thread
+			// TODO: move this to a separate function
 			vehicles.clear();
 			HTTPSupport.parseVehicleData(result, vehicles);
-			// Display the data onto the textView (replace later)
-			if (vehicles.size() == 0) {
-				//setData("No buses running on the selected: " + getShownRoute());
-			} else {
-				/*for (Iterator<VehicleData> i = vehicles.iterator(); i.hasNext(); ) {
-					VehicleData data = i.next();
-					//setData(data);
-				}*/
-				if (mBus1 != null) mBus1.remove();
-				mBus1 = map.addMarker(new MarkerOptions()
-						.position(new LatLng(vehicles.get(0).getLat(),vehicles.get(0).getLog()))
-						.title("Bus" + vehicles.get(0).getVehicleNum())
-						.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher)));
-			}
+
+			loadBusesToMap(); // Load that data into the map dawg
 		}
 	}
 
@@ -209,9 +231,13 @@ public class GMapFragment extends SupportMapFragment {
 			HttpResponse response = HTTPSupport.postData(getString(R.string.postURI), 
 					getString(R.string.ajaxControlID), getString(R.string.routeParams1) + routeabb[getShownRoute()] + 
 					getString(R.string.routeParams2));
+			//Log.e("HELfasfP", getString(R.string.routeParams1) + routeabb[getShownRoute()] + 
+			//		getString(R.string.routeParams2));
 			StringBuilder str = null;
+			
 			try {
 				str = HTTPSupport.inputStreamToString(response.getEntity().getContent());
+				//Log.e("HALLL", str.toString());
 			} catch (IOException e) {
 				Log.e("GMap", e.getMessage());
 			}
@@ -229,9 +255,21 @@ public class GMapFragment extends SupportMapFragment {
 
 			// TODO: Store this data into a database and make it so that it
 			// only need to update like once a week/when not using data
+			
 			RouteData route = HTTPSupport.parseRouteData("" + getShownRoute(), result);
+			//getActivity().deleteDatabase(RouteNameEntry.TABLE_NAME);
+			 
+			DatabaseHandler db = new DatabaseHandler(getActivity());
+			db.delete();
+			db.addRouteName(route);
+			// Reading all contacts
+	        Log.d("GMap ", "Test.."); 
+	        List<String> routenames = db.getAllRouteNames();
+	        Log.d("GMap", "Done test read");
+	         
+	        for (String r : routenames) 
+	        	Log.d("GMap", r);
 			loadRouteToMap(route);	// Put in the markers in the map
-			//setData(route.getStops()[0]);
 		}
 	}
 }

@@ -16,6 +16,8 @@ import com.ranintotree.ride.util.RouteData;
 import com.ranintotree.ride.util.StopData;
 import com.ranintotree.ride.util.VehicleData;
 
+import database.DatabaseHandler;
+
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,6 +31,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class StatusFragment extends Fragment {
+	// ID for debugging in LogCat
+	public static final String TAG = "StatusFragment";
+	
 	// VehicleData structures
 	private ArrayList<VehicleData> vehicles; 
 	private RouteData route;
@@ -72,6 +77,8 @@ public class StatusFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
+		
+		
 
 		// Initialize the scheduler and add the HTTPPOST function
 		handler.post(HTTPTask);

@@ -98,7 +98,7 @@ public class HTTPSupport {
 		String strRouteName;
 		int index = input.indexOf("Name");
 		strRouteName = input.substring(index + 7, input.indexOf("\"",index+8));
-		System.out.println(strRouteName);
+		Log.e(TAG, "Name: " + strRouteName);
 		String strStopID;
 		String strStopName;
 		String strSeq;
@@ -110,17 +110,18 @@ public class HTTPSupport {
 			strStopID = input.substring(index + 9, input.indexOf("\"",index+11));
 			index = input.indexOf("\"Name", index + 10);
 			strStopName = input.substring(index + 8, input.indexOf("\"", index+9));
-			index = input.indexOf("Seq", index + 20);
+			index = input.indexOf("Seq\"", index + 20);
 			strSeq = input.substring(index+5,input.indexOf(",",index+6));
 			index += strSeq.length() + 7;
 			strLat = input.substring(index+5,input.indexOf(",",index+6));
+			
 			index += strLat.length() + 7;
 			strLog = input.substring(index+5,input.indexOf(",",index+6));
 			index = input.indexOf("StopID", index + 20);
 			stops.add(new StopData(strStopID,strStopName,strSeq,Double.parseDouble(strLat),Double.parseDouble(strLog)));
 		}
 		System.out.println("Size: " + stops.size());
-		RouteData route = new RouteData(routeabb, stops);
+		RouteData route = new RouteData(routeabb, strRouteName, stops);
 		return route;
 	}
 
