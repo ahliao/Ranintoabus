@@ -128,7 +128,7 @@ public class HTTPSupport {
 	// NOTE: Maybe put into separate file
 	// parse the response for the vehicle data
 	public static void parseVehicleData(StringBuilder input, ArrayList<VehicleData> vehicles) {
-		int routeAbb = input.indexOf("Rou");
+		int routeAbb = input.indexOf("Rout");
 		if (routeAbb >= 0)
 		{
 			// TODO: Clean this up

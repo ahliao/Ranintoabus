@@ -11,12 +11,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.http.HttpResponse;
 
 import com.ranintotree.ride.R;
+import com.ranintotree.ride.database.DatabaseHandler;
 import com.ranintotree.ride.util.HTTPSupport;
 import com.ranintotree.ride.util.RouteData;
 import com.ranintotree.ride.util.StopData;
 import com.ranintotree.ride.util.VehicleData;
 
-import database.DatabaseHandler;
 
 import android.content.res.Resources;
 import android.os.AsyncTask;

@@ -26,13 +26,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ranintotree.ride.R;
+import com.ranintotree.ride.database.DatabaseHandler;
+import com.ranintotree.ride.database.RouteNamesContract.RouteNameEntry;
 import com.ranintotree.ride.util.HTTPSupport;
 import com.ranintotree.ride.util.RouteData;
 import com.ranintotree.ride.util.StopData;
 import com.ranintotree.ride.util.VehicleData;
 
-import database.DatabaseHandler;
-import database.RouteNamesContract.RouteNameEntry;
 
 public class GMapFragment extends SupportMapFragment {
 	static final LatLng HAMBURG = new LatLng(42.2778682, -83.7465795);
@@ -231,13 +231,10 @@ public class GMapFragment extends SupportMapFragment {
 			HttpResponse response = HTTPSupport.postData(getString(R.string.postURI), 
 					getString(R.string.ajaxControlID), getString(R.string.routeParams1) + routeabb[getShownRoute()] + 
 					getString(R.string.routeParams2));
-			//Log.e("HELfasfP", getString(R.string.routeParams1) + routeabb[getShownRoute()] + 
-			//		getString(R.string.routeParams2));
 			StringBuilder str = null;
 			
 			try {
 				str = HTTPSupport.inputStreamToString(response.getEntity().getContent());
-				//Log.e("HALLL", str.toString());
 			} catch (IOException e) {
 				Log.e("GMap", e.getMessage());
 			}
@@ -257,11 +254,10 @@ public class GMapFragment extends SupportMapFragment {
 			// only need to update like once a week/when not using data
 			
 			RouteData route = HTTPSupport.parseRouteData("" + getShownRoute(), result);
-			//getActivity().deleteDatabase(RouteNameEntry.TABLE_NAME);
 			 
 			DatabaseHandler db = new DatabaseHandler(getActivity());
-			db.delete();
-			db.addRouteName(route);
+			//db.delete();	// Just to see if the table is being set rigth
+			if (db.getRouteName(route) == null) db.addRouteName(route);
 			// Reading all contacts
 	        Log.d("GMap ", "Test.."); 
 	        List<String> routenames = db.getAllRouteNames();
@@ -269,6 +265,10 @@ public class GMapFragment extends SupportMapFragment {
 	         
 	        for (String r : routenames) 
 	        	Log.d("GMap", r);
+	        /*route.setRouteAbb("Blah");
+	        String test = db.getRouteName(route);
+	        if (test != null) Log.d("GMap", "The read route: " + test);
+	        else Log.d("GMap", "The read route: null");*/
 			loadRouteToMap(route);	// Put in the markers in the map
 		}
 	}

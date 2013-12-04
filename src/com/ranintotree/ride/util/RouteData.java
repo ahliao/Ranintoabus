@@ -23,7 +23,9 @@ public class RouteData {
 	
 	public int getID() { return id; }
 	public String getRouteAbb() { return strRouteAbb; }
+	public void setRouteAbb(String abb) { strRouteAbb = abb; }
 	public String getName() { return strName; }
+	public void setName(String name) { strName = name; }
 	public StopData[] getStops() { return stops; }
 	public int getNumStops() { return stops.length; }
 }
