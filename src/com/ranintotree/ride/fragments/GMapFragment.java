@@ -3,8 +3,6 @@ package com.ranintotree.ride.fragments;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-
 import org.apache.http.HttpResponse;
 
 import android.content.res.Resources;
@@ -27,7 +25,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ranintotree.ride.R;
 import com.ranintotree.ride.database.DatabaseHandler;
-import com.ranintotree.ride.database.RouteNamesContract.RouteNameEntry;
 import com.ranintotree.ride.util.HTTPSupport;
 import com.ranintotree.ride.util.RouteData;
 import com.ranintotree.ride.util.StopData;
@@ -35,8 +32,6 @@ import com.ranintotree.ride.util.VehicleData;
 
 
 public class GMapFragment extends SupportMapFragment {
-	static final LatLng HAMBURG = new LatLng(42.2778682, -83.7465795);
-	//static final LatLng KIEL = new LatLng(53.551, 9.993);
 	private static View view;
 	private GoogleMap map;
 
@@ -93,8 +88,7 @@ public class GMapFragment extends SupportMapFragment {
 		} catch (InflateException e) {
 
 		}
-
-		//view = inflater.inflate(R.layout.fragment_map, container, false);
+		
 		return view;
 	}
 
@@ -113,7 +107,21 @@ public class GMapFragment extends SupportMapFragment {
 
 		// Zoom in, animating the camera.
 		//map.animateCamera(CameraUpdateFactory.zoomTo(21), 2000, null);
-		new PostRouteData().execute("");
+		// If the route is already in the database, 
+		// check if the timestamp is recent and how the network status is
+		DatabaseHandler db = new DatabaseHandler(getActivity());
+		Resources res = getResources();
+		String[] routeabb = res.getStringArray(R.array.routes_abb_array);
+		RouteData route = db.getRoute(routeabb[getShownRoute()]);
+		db.close();
+		if (route == null) { 
+			// If the route isn't in the database, get it from online
+			new PostRouteData().execute("");
+		} else {
+			// else just load it from the database
+			// TODO: check the timestamp and determine if route should be updated
+			loadRouteToMap(route);
+		}
 	}
 
 	@Override
@@ -126,8 +134,6 @@ public class GMapFragment extends SupportMapFragment {
 	private Runnable HTTPTask = new Runnable() {
 		@Override
 		public void run() {
-			//setData(i + "");
-			//++i;
 			if (HTTPSupport.isNetworkAvailable(getActivity())) {
 				postBusTask = null;
 				postBusTask = new PostBusData();	// TODO: do something about the AsyncTask string input?
@@ -232,7 +238,7 @@ public class GMapFragment extends SupportMapFragment {
 					getString(R.string.ajaxControlID), getString(R.string.routeParams1) + routeabb[getShownRoute()] + 
 					getString(R.string.routeParams2));
 			StringBuilder str = null;
-			
+
 			try {
 				str = HTTPSupport.inputStreamToString(response.getEntity().getContent());
 			} catch (IOException e) {
@@ -250,25 +256,14 @@ public class GMapFragment extends SupportMapFragment {
 		protected void onPostExecute(StringBuilder result) {
 			super.onPostExecute(result);
 
-			// TODO: Store this data into a database and make it so that it
-			// only need to update like once a week/when not using data
-			
-			RouteData route = HTTPSupport.parseRouteData("" + getShownRoute(), result);
-			 
-			DatabaseHandler db = new DatabaseHandler(getActivity());
-			//db.delete();	// Just to see if the table is being set rigth
-			if (db.getRouteName(route) == null) db.addRouteName(route);
-			// Reading all contacts
-	        Log.d("GMap ", "Test.."); 
-	        List<String> routenames = db.getAllRouteNames();
-	        Log.d("GMap", "Done test read");
-	         
-	        for (String r : routenames) 
-	        	Log.d("GMap", r);
-	        /*route.setRouteAbb("Blah");
-	        String test = db.getRouteName(route);
-	        if (test != null) Log.d("GMap", "The read route: " + test);
-	        else Log.d("GMap", "The read route: null");*/
+			Resources res = getResources();
+			String[] routeabb = res.getStringArray(R.array.routes_abb_array);
+			RouteData route = HTTPSupport.parseRouteData(routeabb[getShownRoute()], result);
+
+			DatabaseHandler db = new DatabaseHandler(getActivity()); 
+			db.addRouteName(route);	// Add route to the database
+			db.close();
+
 			loadRouteToMap(route);	// Put in the markers in the map
 		}
 	}

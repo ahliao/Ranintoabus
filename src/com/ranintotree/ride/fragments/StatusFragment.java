@@ -1,17 +1,10 @@
 package com.ranintotree.ride.fragments;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.http.HttpResponse;
 
 import com.ranintotree.ride.R;
-import com.ranintotree.ride.database.DatabaseHandler;
 import com.ranintotree.ride.util.HTTPSupport;
 import com.ranintotree.ride.util.RouteData;
 import com.ranintotree.ride.util.StopData;
@@ -23,7 +16,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,9 +29,6 @@ public class StatusFragment extends Fragment {
 	// VehicleData structures
 	private ArrayList<VehicleData> vehicles; 
 	private RouteData route;
-
-	// 
-	private WeakReference<PostData> ayncTaskWeakRef;
 
 	//private ScheduledExecutorService scheduler;
 	private Handler handler = new Handler();

@@ -2,7 +2,7 @@ package com.ranintotree.ride.util;
 
 public class StopData {
 	// The variables
-	String id;
+	String id;	// Could change to a int maybe
 	String name;
 	String seq;
 	double lat, log;

@@ -22,10 +22,13 @@ public class RouteData {
 	}
 	
 	public int getID() { return id; }
+	public void setID(int i) { id = i; }
 	public String getRouteAbb() { return strRouteAbb; }
 	public void setRouteAbb(String abb) { strRouteAbb = abb; }
 	public String getName() { return strName; }
 	public void setName(String name) { strName = name; }
 	public StopData[] getStops() { return stops; }
 	public int getNumStops() { return stops.length; }
+	
+	public StopData getStopAt(int i) { return stops[i]; }
 }

@@ -8,7 +8,6 @@ import android.widget.ListView;
 import com.ranintotree.ride.R;
 import com.ranintotree.ride.fragments.GMapFragment;
 import com.ranintotree.ride.fragments.RouteFragment;
-import com.ranintotree.ride.fragments.StatusFragment;
 import com.ranintotree.ride.fragments.RouteFragment.OnRouteListClickListener;
 
 public class RouteActivity extends FragmentActivity implements OnRouteListClickListener {

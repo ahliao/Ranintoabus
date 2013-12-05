@@ -98,7 +98,7 @@ public class HTTPSupport {
 		String strRouteName;
 		int index = input.indexOf("Name");
 		strRouteName = input.substring(index + 7, input.indexOf("\"",index+8));
-		Log.e(TAG, "Name: " + strRouteName);
+		Log.e(TAG, "Abbreviation: " + routeabb);
 		String strStopID;
 		String strStopName;
 		String strSeq;
