@@ -7,38 +7,42 @@ import android.view.View;
 import android.widget.ListView;
 import com.ranintotree.ride.R;
 import com.ranintotree.ride.fragments.GMapFragment;
+import com.ranintotree.ride.fragments.StatusFragment;
+import com.ranintotree.ride.fragments.GMapFragment.OnMapInfoWindowClickListener;
 import com.ranintotree.ride.fragments.RouteFragment;
 import com.ranintotree.ride.fragments.RouteFragment.OnRouteListClickListener;
+import com.ranintotree.ride.util.StopData;
 
-public class RouteActivity extends FragmentActivity implements OnRouteListClickListener {
-	
+public class RouteActivity extends FragmentActivity implements OnRouteListClickListener, 
+OnMapInfoWindowClickListener {
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_route);
-		
+
 		// Add the route fragment
 		// Check if the activity is using the layout version with the fragment
 		if (findViewById(R.id.route_fragment_container) != null) {
 			if (savedInstanceState != null) {
 				return;
 			}
-			
+
 			// Creates a new fragment to put into the container
 			RouteFragment routeFragment = new RouteFragment();
-			
+
 			//routeFragment.setArguments(getIntent().getExtras());
-			
+
 			// Add the fragment to the fragment_container FrameLayout
 			getSupportFragmentManager().beginTransaction().add(R.id.route_fragment_container, routeFragment).commit();
 		}
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -50,11 +54,28 @@ public class RouteActivity extends FragmentActivity implements OnRouteListClickL
 		//StatusFragment status = StatusFragment.newInstance(position);
 		GMapFragment map = GMapFragment.newInstance(position);
 		//GMapFragment map = new GMapFragment();
-		
+
 		// Execute the transaction and replace the route fragment
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 		//ft.replace(R.id.route_fragment_container, status);
 		ft.replace(R.id.route_fragment_container, map);
+		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		ft.addToBackStack(null);
+		ft.commit();
+	}
+
+	@Override
+	public void onMapInfoWindowClick(StopData stop) {
+		// TODO: switch to the status fragment
+		// Replace the fragment in the container to the selected route status
+		//StatusFragment status = StatusFragment.newInstance(position);
+		StatusFragment status = StatusFragment.newInstance(0);
+		//GMapFragment map = new GMapFragment();
+
+		// Execute the transaction and replace the route fragment
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		//ft.replace(R.id.route_fragment_container, status);
+		ft.replace(R.id.route_fragment_container, status);
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.addToBackStack(null);
 		ft.commit();

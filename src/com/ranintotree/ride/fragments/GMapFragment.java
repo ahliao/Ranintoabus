@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import org.apache.http.HttpResponse;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,10 +15,12 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -25,6 +28,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.ranintotree.ride.R;
 import com.ranintotree.ride.database.DatabaseHandler;
+import com.ranintotree.ride.fragments.RouteFragment.OnRouteListClickListener;
 import com.ranintotree.ride.util.HTTPSupport;
 import com.ranintotree.ride.util.RouteData;
 import com.ranintotree.ride.util.StopData;
@@ -32,16 +36,24 @@ import com.ranintotree.ride.util.VehicleData;
 
 
 public class GMapFragment extends SupportMapFragment {
+	// Ann Arbor's lat and long
+	static final LatLng ANNARBOR = new LatLng(42.2814,83.7483);
+	
 	private static View view;
 	private GoogleMap map;
 
 	// Markers for the buses
 	private ArrayList<VehicleData> vehicles;	// List of the buses
 	private ArrayList<Marker> busMarkers;		// List of the bus markers on map
+	private RouteData routeData;
+	private ArrayList<Marker> stopMarkers;		// List of the stop markers
 
 	//private ScheduledExecutorService scheduler;
 	private Handler handler = new Handler();
 	private PostBusData postBusTask = null;
+	
+	// Listener for when an infowindow is clicked
+	private OnMapInfoWindowClickListener mListener;
 
 	/*
 	 * Create a new instance of GMapFragment
@@ -99,16 +111,29 @@ public class GMapFragment extends SupportMapFragment {
 		// initialize the ArrayList
 		vehicles = new ArrayList<VehicleData>();
 		busMarkers = new ArrayList<Marker>();
+		stopMarkers = new ArrayList<Marker>();
 
 		// get the map reference
 		map = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
+		map.setOnInfoWindowClickListener(new OnInfoWindowClickListener() {
+	        @Override
+	        public void onInfoWindowClick(Marker marker) {
+	        	if (mListener != null) {
+	        		int index = stopMarkers.indexOf(marker);
+	        		// Using the index get the StopData from that route
+	        		mListener.onMapInfoWindowClick(routeData.getStopAt(index));
+	        	}
+	        }
+	    });
+		
 		map.clear();
 
-		// Zoom in, animating the camera.
-		//map.animateCamera(CameraUpdateFactory.zoomTo(21), 2000, null);
+		// Zoom in to Ann Arbor
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(ANNARBOR, 15));
+		
 		// If the route is already in the database, 
-		// check if the timestamp is recent and how the network status is
+		// TODO: check if the timestamp is recent and how the network status is
 		DatabaseHandler db = new DatabaseHandler(getActivity());
 		Resources res = getResources();
 		String[] routeabb = res.getStringArray(R.array.routes_abb_array);
@@ -130,6 +155,22 @@ public class GMapFragment extends SupportMapFragment {
 		handler.removeCallbacks(HTTPTask);
 		postBusTask.cancel(true); 
 	}
+	
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		try {
+			mListener = (OnMapInfoWindowClickListener) activity;
+		} catch (ClassCastException e) {
+			throw new IllegalStateException("Activity must implement OnMapInfoWindowClickListener!");
+		}
+	}
+	
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		mListener = null;
+	}
 
 	private Runnable HTTPTask = new Runnable() {
 		@Override
@@ -145,23 +186,22 @@ public class GMapFragment extends SupportMapFragment {
 
 	// Load the route into the map
 	private void loadRouteToMap(RouteData route) {
+		this.routeData = route;
 		StopData s1;
 		LatLng lat;
-		//Marker stop1;
+		stopMarkers.clear();
+		Marker stop;
 		for (int i = 0; i < route.getNumStops(); ++i) {
 			s1 = route.getStops()[i];
 
 			lat = new LatLng(s1.getLat(),s1.getLog());
-			/*Circle circle = map.addCircle(new CircleOptions()
-				.center(lat)
-				.radius(5)
-				.strokeColor(Color.RED));*/
-			map.addMarker(new MarkerOptions().position(lat)
+			
+			stop = map.addMarker(new MarkerOptions().position(lat)
 					.title(s1.getName())
 					.icon(BitmapDescriptorFactory.fromResource(R.drawable.square)));
+			stopMarkers.add(stop);
 			if (i == 0) map.moveCamera(CameraUpdateFactory.newLatLngZoom(lat, 14));
 		}
-
 	}
 
 	// Load the buses into the map
@@ -266,5 +306,9 @@ public class GMapFragment extends SupportMapFragment {
 
 			loadRouteToMap(route);	// Put in the markers in the map
 		}
+	}
+	
+	public interface OnMapInfoWindowClickListener {
+		public void onMapInfoWindowClick(StopData stop);
 	}
 }
