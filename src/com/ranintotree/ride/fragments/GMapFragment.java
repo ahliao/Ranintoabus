@@ -1,3 +1,5 @@
+// map view
+
 package com.ranintotree.ride.fragments;
 
 import java.io.IOException;
@@ -26,6 +28,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.ranintotree.ride.R;
 import com.ranintotree.ride.database.DatabaseHandler;
 import com.ranintotree.ride.fragments.RouteFragment.OnRouteListClickListener;
@@ -54,6 +57,7 @@ public class GMapFragment extends SupportMapFragment {
 	
 	// Listener for when an infowindow is clicked
 	private OnMapInfoWindowClickListener mListener;
+	
 
 	/*
 	 * Create a new instance of GMapFragment
@@ -112,6 +116,7 @@ public class GMapFragment extends SupportMapFragment {
 		vehicles = new ArrayList<VehicleData>();
 		busMarkers = new ArrayList<Marker>();
 		stopMarkers = new ArrayList<Marker>();
+		
 
 		// get the map reference
 		map = ((SupportMapFragment) getFragmentManager().findFragmentById(R.id.map))
@@ -153,7 +158,7 @@ public class GMapFragment extends SupportMapFragment {
 	public void onPause() {
 		super.onPause();
 		handler.removeCallbacks(HTTPTask);
-		postBusTask.cancel(true); 
+		if (postBusTask != null) postBusTask.cancel(true); 
 	}
 	
 	@Override
@@ -172,13 +177,28 @@ public class GMapFragment extends SupportMapFragment {
 		mListener = null;
 	}
 
+	enum networkStatus {CONNECTED, DISCONNECTED, UNKNOWN};
+	
 	private Runnable HTTPTask = new Runnable() {
+		
+		private networkStatus network = networkStatus.UNKNOWN;
+		
 		@Override
 		public void run() {
 			if (HTTPSupport.isNetworkAvailable(getActivity())) {
 				postBusTask = null;
 				postBusTask = new PostBusData();	// TODO: do something about the AsyncTask string input?
 				postBusTask.execute("");
+				if (network == networkStatus.UNKNOWN || network == networkStatus.DISCONNECTED) {
+					Toast.makeText(getActivity(), R.string.toastMsg, Toast.LENGTH_LONG).show();
+					network = networkStatus.CONNECTED;
+				}
+				
+			} else {
+				if (network == networkStatus.UNKNOWN || network == networkStatus.CONNECTED) {
+					Toast.makeText(getActivity(), R.string.networkErrorMsg, Toast.LENGTH_LONG).show();
+					network = networkStatus.DISCONNECTED;
+				}
 			}
 			handler.postDelayed(HTTPTask, 15000);
 		}
@@ -191,6 +211,11 @@ public class GMapFragment extends SupportMapFragment {
 		LatLng lat;
 		stopMarkers.clear();
 		Marker stop;
+		
+		
+		PolylineOptions line = new PolylineOptions();
+		
+		
 		for (int i = 0; i < route.getNumStops(); ++i) {
 			s1 = route.getStops()[i];
 
@@ -200,8 +225,10 @@ public class GMapFragment extends SupportMapFragment {
 					.title(s1.getName())
 					.icon(BitmapDescriptorFactory.fromResource(R.drawable.square)));
 			stopMarkers.add(stop);
+			line.add(lat);
 			if (i == 0) map.moveCamera(CameraUpdateFactory.newLatLngZoom(lat, 14));
 		}
+		map.addPolyline(line);
 	}
 
 	// Load the buses into the map
@@ -258,7 +285,6 @@ public class GMapFragment extends SupportMapFragment {
 		protected void onPostExecute(StringBuilder result) {
 			super.onPostExecute(result);
 
-			Toast.makeText(getActivity(), R.string.toastMsg, Toast.LENGTH_LONG).show();
 
 			// TODO: move this to a separate function
 			vehicles.clear();

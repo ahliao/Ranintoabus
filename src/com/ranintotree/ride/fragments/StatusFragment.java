@@ -1,3 +1,7 @@
+// tells status of bus or stop
+
+
+
 package com.ranintotree.ride.fragments;
 
 import java.io.IOException;
