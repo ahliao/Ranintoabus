@@ -65,11 +65,10 @@ OnMapInfoWindowClickListener {
 	}
 
 	@Override
-	public void onMapInfoWindowClick(StopData stop) {
-		// TODO: switch to the status fragment
+	public void onMapInfoWindowClick(String routeAbb, StopData stop) {
 		// Replace the fragment in the container to the selected route status
-		//StatusFragment status = StatusFragment.newInstance(position);
-		StatusFragment status = StatusFragment.newInstance(0);
+		// TODO: find the stop
+		StatusFragment status = StatusFragment.newInstance(routeAbb, stop);
 		//GMapFragment map = new GMapFragment();
 
 		// Execute the transaction and replace the route fragment
