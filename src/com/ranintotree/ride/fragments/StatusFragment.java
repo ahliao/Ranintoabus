@@ -6,16 +6,15 @@ package com.ranintotree.ride.fragments;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.apache.http.HttpResponse;
 
 import com.ranintotree.ride.R;
 import com.ranintotree.ride.util.HTTPSupport;
-import com.ranintotree.ride.util.RouteData;
 import com.ranintotree.ride.util.StopData;
 import com.ranintotree.ride.util.VehicleData;
 
-
-import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,10 +28,6 @@ import android.widget.Toast;
 public class StatusFragment extends Fragment {
 	// ID for debugging in LogCat
 	public static final String TAG = "StatusFragment";
-	
-	// VehicleData structures
-	private ArrayList<VehicleData> vehicles; 
-	private RouteData route;
 
 	//private ScheduledExecutorService scheduler;
 	private Handler handler = new Handler();
@@ -42,27 +37,30 @@ public class StatusFragment extends Fragment {
 	 * Create a new instance of StatusFragment
 	 * initialized to show the route at 'route'
 	 */
-	public static StatusFragment newInstance(int route) {
+	public static StatusFragment newInstance(String routeAbb, StopData stop) {
 		StatusFragment s = new StatusFragment();
 
 		// Supply index input as an argument
 		Bundle args = new Bundle();
-		args.putInt("route_list_pos", route);
+		args.putString("route_abb", routeAbb);
+		args.putString("stop_id", stop.getID());
 		s.setArguments(args);
 
 		return s;
 	}
 
 	// Really only needed for like tablets I think
-	public int getShownRoute() {
-		return getArguments().getInt("route_list_pos", 0);
+	public String getRouteAbb() {
+		return getArguments().getString("route_abb");
+	}
+	
+	public String getStopID() {
+		return getArguments().getString("stop_id");
 	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		// initialize the ArrayList
-		vehicles = new ArrayList<VehicleData>();
 	}
 
 	@Override
@@ -70,8 +68,6 @@ public class StatusFragment extends Fragment {
 		super.onCreate(savedInstanceState);
 
 		setRetainInstance(true);
-		
-		
 
 		// Initialize the scheduler and add the HTTPPOST function
 		handler.post(HTTPTask);
@@ -117,14 +113,9 @@ public class StatusFragment extends Fragment {
 
 		@Override
 		protected StringBuilder doInBackground(String... arg0) {
-			Resources res = getResources();
-			String[] routeabb = res.getStringArray(R.array.routes_abb_array);
-			//HttpResponse response = HTTPSupport.postData(getString(R.string.postURI), 
-			//		getString(R.string.ajaxControlID), getString(R.string.vehicleParams1) + routeabb[getShownRoute()] + 
-			//		getString(R.string.vehicleParams2));
 			HttpResponse response = HTTPSupport.postData(getString(R.string.postURI), 
-					getString(R.string.ajaxControlID), getString(R.string.routeParams1) + routeabb[getShownRoute()] + 
-					getString(R.string.routeParams2));
+					getString(R.string.ajaxControlID), getString(R.string.stopParams1) + getStopID() + 
+					getString(R.string.stopParams2) + getRouteAbb() + getString(R.string.stopParams3));
 			StringBuilder str = null;
 			try {
 				str = HTTPSupport.inputStreamToString(response.getEntity().getContent());
@@ -148,7 +139,7 @@ public class StatusFragment extends Fragment {
 
 			// Should put the UI changes into another function/ the UI thread
 			setData("");
-			vehicles.clear();
+			//vehicles.clear();
 			//HTTPSupport.parseVehicleData(result, vehicles);
 			// Display the data onto the textView (replace later)
 			/*if (vehicles.size() == 0) {
@@ -163,9 +154,18 @@ public class StatusFragment extends Fragment {
 
 			// TODO: Store this data into a database and make it so that it
 			// only need to update like once a week/when not using data
-			route = HTTPSupport.parseRouteData("1", result);
-			setData(route.getStops()[0]);
+			//route = HTTPSupport.parseRouteData("1", result);
+			//setData(route.getStops()[0]);
 			//}
+			ArrayList<String> data = HTTPSupport.parseStopData(result);
+			StringBuilder str = new StringBuilder();
+			for (Iterator<String> i = data.iterator(); i.hasNext(); ) {
+				str.append(i.next() + "\n");
+			}
+			setData(str.toString());
+			//setData(data.get(2));
+			//System.out.println(result);
+			//setData(result.toString());
 		}
 	}
 

@@ -92,6 +92,32 @@ public class HTTPSupport {
 		return false;
 	}
 	
+	// parse the response for the stop data; 
+	// Gets the arrival/depart times and the route for the stop
+	public static ArrayList<String> parseStopData(StringBuilder input) {
+		ArrayList<String> data = new ArrayList<String>();
+		
+		// Find the data values
+        String strRouteName = null;
+        String strArrival = null;
+        int index = 0;
+        //if (input == null); // This should throw an exception
+        index = input.indexOf("route_name", 1900);
+        strRouteName = input.substring(index + 18, input.indexOf("\\u003c",index + 21));
+        data.add(strRouteName);
+
+        index = 210;
+        String strSearch = "departs";
+        if (input.indexOf("arrives", index) != -1) strSearch = "arrives";
+        while ((index = input.indexOf(strSearch, index + 10)) != -1) {
+            strArrival = input.substring(index, input.indexOf("\\r\\n",index));
+
+            data.add(strArrival);
+        }
+        
+        return data;
+	}
+	
 	// parse the response for the route data aka the stops
 	public static RouteData parseRouteData(String routeabb, StringBuilder input) {
 		ArrayList<StopData> stops = new ArrayList<StopData>();
@@ -128,6 +154,7 @@ public class HTTPSupport {
 	// NOTE: Maybe put into separate file
 	// parse the response for the vehicle data
 	public static void parseVehicleData(StringBuilder input, ArrayList<VehicleData> vehicles) {
+		if (vehicles == null) return; // Throw exception or LogCat
 		int routeAbb = input.indexOf("Rout");
 		if (routeAbb >= 0)
 		{

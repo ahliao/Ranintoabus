@@ -17,7 +17,6 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,7 +30,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.ranintotree.ride.R;
 import com.ranintotree.ride.database.DatabaseHandler;
-import com.ranintotree.ride.fragments.RouteFragment.OnRouteListClickListener;
 import com.ranintotree.ride.util.HTTPSupport;
 import com.ranintotree.ride.util.RouteData;
 import com.ranintotree.ride.util.StopData;
@@ -127,7 +125,7 @@ public class GMapFragment extends SupportMapFragment {
 	        	if (mListener != null) {
 	        		int index = stopMarkers.indexOf(marker);
 	        		// Using the index get the StopData from that route
-	        		mListener.onMapInfoWindowClick(routeData.getStopAt(index));
+	        		mListener.onMapInfoWindowClick(routeData.getRouteAbb(), routeData.getStopAt(index));
 	        	}
 	        }
 	    });
@@ -144,9 +142,14 @@ public class GMapFragment extends SupportMapFragment {
 		String[] routeabb = res.getStringArray(R.array.routes_abb_array);
 		RouteData route = db.getRoute(routeabb[getShownRoute()]);
 		db.close();
-		if (route == null) { 
-			// If the route isn't in the database, get it from online
-			new PostRouteData().execute("");
+		if (route == null) {
+			// If there is a network connection
+			if (HTTPSupport.isNetworkAvailable(getActivity())) {
+				// If the route isn't in the database, get it from online
+				new PostRouteData().execute("");
+			} else {
+				// There is no network available
+			}
 		} else {
 			// else just load it from the database
 			// TODO: check the timestamp and determine if route should be updated
@@ -200,7 +203,7 @@ public class GMapFragment extends SupportMapFragment {
 					network = networkStatus.DISCONNECTED;
 				}
 			}
-			handler.postDelayed(HTTPTask, 15000);
+			handler.postDelayed(HTTPTask, 15000); // TODO: Check for the network
 		}
 	};
 
@@ -335,6 +338,6 @@ public class GMapFragment extends SupportMapFragment {
 	}
 	
 	public interface OnMapInfoWindowClickListener {
-		public void onMapInfoWindowClick(StopData stop);
+		public void onMapInfoWindowClick(String routeAbb, StopData stop);
 	}
 }
